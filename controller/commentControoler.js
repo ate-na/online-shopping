@@ -5,11 +5,11 @@ const AppError = require('../Utill/appError');
 
 exports.Showcomments = catchAsync(async (req, res, next) => {
   // const { ProductID } = req.params;
-  const { ProductID } = req.body.ProductID;
+  const  ProductID  = req.body.productID;
   if (!ProductID) {
     return next(new AppError('Request is not providing', 400));
   }
-  const comments = await commentModel.find({ ProductID: ProductID });
+  const comments = await commentModel.find({ productID: ProductID });
   res.status(200).json({
     status: 'successful',
     comments,
