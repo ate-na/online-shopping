@@ -3,7 +3,9 @@ const router=express.Router()
 
 const Productcontroller=require('../controller/Productcontroller')
 const upload=require('../middleware/upload')
-const {authenticate}=require('../middleware/authenticate')
+// const {authenticate}=require('../middleware/authenticate')
+const {authenticate}=require('../controller/AuthController')
+
 
 
 router.get('/',Productcontroller.getAllproducts)

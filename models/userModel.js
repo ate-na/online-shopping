@@ -12,6 +12,13 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  username:{
+    type: String,
+    lowercase: true,
+    required: [true, 'Please Provide a Email'],
+    unique: [true, 'This Email is not available'],
+    index: true,
+  },
   phoneNumber: {
     type: String,
     required: true,
@@ -24,14 +31,16 @@ const userSchema = new Schema({
   },
   email: {
     type: String,
-    required: true,
-    validate: validator.isEmail,
+    lowercase: true,
+    required: [true, 'Please Provide a Email'],
+    unique: [true, 'This Email is not available'],
+    index: true,
   },
-//   role: {
-//     type: String,
-//     enum: UserRoles,
-//     default: UserRoles.CUSTOMER,
-//   },
+  role: {
+    type: String,
+    enum: UserRoles,
+    default: UserRoles.CUSTOMER,
+  },
   birthdate:{
     type:Date,
   },
@@ -77,6 +86,21 @@ userSchema.methods.addToCart=function(product){
     }
 }
 
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+  if (!this.phoneNumber.startsWith('+98')) {
+    this.phoneNumber = `+98${this.phoneNumber.slice(1)}`;
+  }
+
+  next();
+});
+
+// Checks if entered password is correct or not (userPass => hashed password in DB)
+userSchema.methods.checkPassword = async (userPass, enteredPass) => {
+  return await bcrypt.compare(enteredPass, userPass);
+};
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

@@ -2,8 +2,19 @@ const express=require('express')
 const mongoose=require('mongoose')
 const morgan=require('morgan')
 const bodyparser=require('body-parser');
+const path = require('path');
 
-mongoose.connect('mongodb://localhost:27-17/test',{useNewUrlParser:true,useUnifiedTopology:true,useCreateIndex: true})
+require('dotenv').config({
+    path: path.join(__dirname, 'config.env'),
+  });
+
+mongoose.connect('mongodb://localhost:27-17/test',
+{
+useNewUrlParser:true,
+useUnifiedTopology:true,
+useCreateIndex: true,
+useFindAndModify: false,
+})
 
 const db=mongoose.connection
 // db.collection.dropIndexes()
