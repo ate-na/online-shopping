@@ -15,8 +15,9 @@ db.once('open',()=>{
 const app=express()
 
 const Productrouter=require('./router/ProductRouter')
-const Authrouter=require('./router/authRouter')
+const AuthRouter=require('./router/authRouter')
 const categoryRouter=require('./router/categoryRouter') 
+const commentRouter=require('./router/commentRouter') 
 
 app.use(morgan('dev'))
 app.use(bodyparser.urlencoded({extended:true}))
@@ -31,5 +32,6 @@ app.listen(PORT,()=>{
 })
 
 app.use('/product',Productrouter);
-app.use('/api',Authrouter)
+app.use('/api',AuthRouter)
 app.use('/category',categoryRouter)
+app.use('/comment',commentRouter)

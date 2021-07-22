@@ -1,11 +1,11 @@
 const commentModel = require('../models/commentModel');
 
 const catchAsync = require('../Utill/catchAsync');
-const AppError = require('../Util/appError');
-const product=require('../models/product')
+const AppError = require('../Utill/appError');
 
 exports.Showcomments = catchAsync(async (req, res, next) => {
-  const { ProductID } = req.params;
+  // const { ProductID } = req.params;
+  const { ProductID } = req.body.ProductID;
   if (!ProductID) {
     return next(new AppError('Request is not providing', 400));
   }
@@ -17,13 +17,16 @@ exports.Showcomments = catchAsync(async (req, res, next) => {
 });
 
 exports.createcomment = catchAsync(async (req, res, next) => {
-  const { ProductID } = req.params;
+  // console.log("ffffff");
+  // const { ProductID } = req.params;
+  const  ProductID = req.body.productID
+  console.log("ProductID",ProductID)
   if (!ProductID) {
-    return next(new AppError('Request is not providing the course id!', 400));
+    return next(new AppError('Request is not providing the Product id!', 400));
   }
   const createcomment = await commentModel.create({
     text: req.body.text,
-    ProductID: ProductID,
+    productID: ProductID,
     userID: req.user._id,
     replyOf: req.body.replyOf,
   });
