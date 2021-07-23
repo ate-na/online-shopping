@@ -14,7 +14,7 @@ exports.createCategory = catchAsync(async (req, res, next) => {
 });
 
 exports.getcategory = catchAsync(async (req, res, next) => {
-  let categoryID=req.body.categoryID;
+  let categoryID=req.params.categoryID;
   const category = await CategoryModels.findById(categoryID);
   if(!category){
     return next(new AppError('Request is not providing', 400));

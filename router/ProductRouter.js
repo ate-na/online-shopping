@@ -3,15 +3,13 @@ const router=express.Router()
 
 const Productcontroller=require('../controller/Productcontroller')
 const upload=require('../middleware/upload')
-// const {authenticate}=require('../middleware/authenticate')
 const {authenticate}=require('../controller/AuthController')
 
 
 
 router.get('/',Productcontroller.getAllproducts)
-router.get('/get',authenticate,Productcontroller.getproduct)
-router.post('/create',Productcontroller.createProduct)
-router.post('/update',authenticate,Productcontroller.updateProduct)
+router.get('/:ProductID',authenticate,Productcontroller.getproduct)
+router.post('/create',upload.single('picture'),Productcontroller.createProduct)
 router.post('/delete',authenticate,Productcontroller.deleteProduct)
 
 

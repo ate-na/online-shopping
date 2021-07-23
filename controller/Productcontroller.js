@@ -12,7 +12,7 @@ exports.getAllproducts=(req, res, next)=>{
 }
 
 exports.getproduct=catchAsync(async (req, res, next)=>{
-    let ProductID=req.body.ProductID
+    let {ProductID}=req.params
     if(!ProductID){
         return next(new AppError('ProductID can not be null', 400));
     }
@@ -29,8 +29,8 @@ exports.getproduct=catchAsync(async (req, res, next)=>{
 })
 
 exports.createProduct=catchAsync(async (req, res, next)=>{
-    const { categoryID } = req.body;
-  if (!categoryID) {
+const { categoryID,OrderID } = req.body;
+  if (!categoryID ) {
     res.status(400).json({
         message:'Please provide a category'
     })
@@ -40,15 +40,11 @@ exports.createProduct=catchAsync(async (req, res, next)=>{
         price:req.body.price,
         Exitence:req.body.Exitence,
         description:req.body.description,
-        // picture:req.body.picture   
+        OrderID:OrderID,
+        picture:req.file.picture  
     })
     if(req.file){
-        let path=''
-        req.files.forEach(function(files,index,arr){
-            path=path+files.path+','
-        })
-        path=path.substring(0,path.lastIndexOf(","))
-        Product.avator=path
+        newProduct.picture=req.file.picture
     }
     newProduct.save()
     res.status(201).json({
@@ -57,19 +53,6 @@ exports.createProduct=catchAsync(async (req, res, next)=>{
       });
 })
 
-exports.updateProduct=catchAsync(async (req, res, next)=>{
-    let ProductID=req.body.ProductID
-    let updateData={
-        name:req.body.name,
-        price:req.body.price,
-        Exitence:req.body.Exitence,
-        description:req.body.description,
-    }
-const newProduct=await Product.findByIdAndUpdate(ProductID,{$set:updateData})
-    if(!newProduct){
-    return next(new AppError('prudct did not updated', 400));
-    }
-})
 exports.deleteProduct=catchAsync(async (req, res, next)=>{
     let ProductID=req.body.ProductID
     if(!ProductID){

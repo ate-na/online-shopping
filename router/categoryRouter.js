@@ -7,7 +7,7 @@ const {authenticate}=require('../controller/AuthController')
 
 
 router.post('/store',authenticate,CategoryController.createCategory)
-router.get('/',authenticate,CategoryController.getcategory)
+router.get('/:categoryID',authenticate,CategoryController.getcategory)
 
 
 module.exports=router

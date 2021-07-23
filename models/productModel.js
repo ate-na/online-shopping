@@ -2,9 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
-    ProductID:{
-        type:String,  
-    },
     name: {
         type: String,
         required: true,
@@ -24,6 +21,11 @@ const ProductSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Category',
     },
+    OrderID: {
+        type: Schema.Types.ObjectId,
+        ref: 'Order',
+        default:null
+    },
     picture: {
         type: String,
     },
@@ -31,6 +33,7 @@ const ProductSchema = new Schema({
     timestamps: true
 });
 
+ProductSchema.index({ ProductID: 1}, { unique: true });
 const product = mongoose.model('Product', ProductSchema);
 
 module.exports = product;

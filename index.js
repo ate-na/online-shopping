@@ -7,8 +7,9 @@ const path = require('path');
 require('dotenv').config({
     path: path.join(__dirname, 'config.env'),
   });
+const {DATA_BASE}=process.env
 
-mongoose.connect('mongodb://localhost:27-17/test',
+mongoose.connect('mongodb://localhost:27-17/shopping',
 {
 useNewUrlParser:true,
 useUnifiedTopology:true,
@@ -29,6 +30,9 @@ const Productrouter=require('./router/ProductRouter')
 const AuthRouter=require('./router/authRouter')
 const categoryRouter=require('./router/categoryRouter') 
 const commentRouter=require('./router/commentRouter') 
+const userRouter=require('./router/userRouter')
+const orderRouter=require('./router/orderRouter')
+
 
 app.use(morgan('dev'))
 app.use(bodyparser.urlencoded({extended:true}))
@@ -46,3 +50,5 @@ app.use('/product',Productrouter);
 app.use('/api',AuthRouter)
 app.use('/category',categoryRouter)
 app.use('/comment',commentRouter)
+app.use('/user',userRouter)
+app.use('/order',orderRouter)
