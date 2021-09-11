@@ -3,18 +3,22 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const Product=require('../models/productModel')
 
+// const UserRoles = {
+//   SELLER: 'seller',
+//   CUSTOMER: 'customer',
+//   ADMIN: 'admin',
+// };
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
   Name: {
     type: String,
-    required: true,
   },
-  // sellerrequest: {
-  //   type:Boolean,
-  //   default:false
-  // },
+  sellerrequest: {
+    type:Boolean,
+    default:false
+  },
   username:{
     type: String,
     lowercase: true,
@@ -24,7 +28,6 @@ const userSchema = new Schema({
   },
   phoneNumber: {
     type: String,
-    required: true,
     unique: true,
   },
   password: {
@@ -39,17 +42,16 @@ const userSchema = new Schema({
     unique: [true, 'This Email is not available'],
     index: true,
   },
-  // role: {
-  //   type: String,
-  //   enum: UserRoles,
-  //   default: UserRoles.CUSTOMER,
-  // },
+  role: {
+    type: String,
+    default: 'customer',
+    enum: ["customer", "seller", "admin"]
+   },
   birthdate:{
     type:Date,
   },
   age:{
       type:Number,
-      required:true
   },cart: {
     items: [{
         productId: {
@@ -83,15 +85,17 @@ userSchema.methods.addToCart = async function(productId) {
       return this.save();
   }
 };
-userSchema.methods.removeFromCart = function(productId) {
+
+userSchema.methods.removeFromCart =async function(productId) {
   const cart = this.cart;
-  const isExisting = cart.items.findIndex(el => new String(el.productId).trim() === new String(productId).trim());
+  const product = await Product.findById(productId);
+  const isExisting = cart.items.findIndex(objInItems => new String(objInItems.productId).trim() === new String(productId).trim());
   if (isExisting >= 0) {
+    cart.totalPrice =0
       cart.items.splice(isExisting, 1);
       return this.save();
   }
 }
-
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
@@ -110,3 +114,4 @@ userSchema.methods.checkPassword = async (userPass, enteredPass) => {
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
+

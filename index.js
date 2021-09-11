@@ -3,13 +3,12 @@ const mongoose=require('mongoose')
 const morgan=require('morgan')
 const bodyparser=require('body-parser');
 const path = require('path');
-
+const passport=require('passport')
 require('dotenv').config({
     path: path.join(__dirname, 'config.env'),
   });
-const {DATA_BASE}=process.env
 
-mongoose.connect('mongodb://localhost:27-17/shopping',
+mongoose.connect('mongodb://localhost:27017/shopping',
 {
 useNewUrlParser:true,
 useUnifiedTopology:true,
@@ -19,7 +18,6 @@ useFindAndModify: false,
 
 const db=mongoose.connection
 // db.collection.dropIndexes()
-
 db.once('open',()=>{
     console.log("Database connection")
 })
@@ -37,6 +35,7 @@ const orderRouter=require('./router/orderRouter')
 app.use(morgan('dev'))
 app.use(bodyparser.urlencoded({extended:true}))
 app.use(bodyparser.json())
+// app.use(passport.initialize())
 
 app.use('/uploads',express.static('uploads'))
 

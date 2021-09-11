@@ -4,11 +4,9 @@ const Schema = mongoose.Schema;
 const OrderSchema = new Schema({
     DateofRegistration: {
         type: Date,
-        required: true,
     },
     DeliveryDate:{
         type: String,
-        required: true,
     },
     Adress:{
         type:String,
@@ -25,7 +23,6 @@ const OrderSchema = new Schema({
 },{
     timestamps: true
 });
-// OrderSchema.index({ OrderID: 1}, { unique: true });
 
 const Order = mongoose.model('Order', OrderSchema);
 module.exports = Order;

@@ -1,7 +1,8 @@
 const orderModel=require('../models/orderModel')
 const Product=require('../models/productModel')
-const catchAsync = require('../Utill/catchAsync');
-const AppError = require('../Utill/appError');
+const catchAsync = require('../Util/catchAsync');
+const AppError = require('../Util/appError');
+
 exports.addToCart = (req, res, next) => {
     req.user.addToCart(req.body.ProductID)
         .then(() => {
@@ -19,6 +20,7 @@ exports.deleteInCart = (req, res, next) => {
             })
         }).catch(err => console.log(err));
 }
+
 exports.createOrder = catchAsync(async (req, res, next) =>{
     let newOrder=new orderModel({
         DateofRegistration:req.body.DateofRegistration,
@@ -33,6 +35,7 @@ exports.createOrder = catchAsync(async (req, res, next) =>{
         newOrder,
       });
 })
+
 exports.deleteOrder=catchAsync(async (req, res, next)=>{
     let {OrderID}=req.params
     if(!OrderID){

@@ -12,7 +12,7 @@ const ProductSchema = new Schema({
     },
     Exitence:{
         type:Boolean,
-        required:true
+        default:true
     },
     description: {
         type: String

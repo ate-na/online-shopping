@@ -1,12 +1,12 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 
-const catchAsync = require('../Utill/catchAsync');
-const AppError = require('../Utill/appError');
+const catchAsync = require('../Util/catchAsync');
+const AppError = require('../Util/appError');
 const UserModel = require('../models/userModel');
+const { roles } = require('../role')
 
 
-const { JWT_SECERT, JWT_EXPIRES_IN } = process.env;
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECERT, {
@@ -19,21 +19,23 @@ const createNsendToken = (user, statuscode, res) => {
 
   user.password = undefined;
   const userName = user.username;
+  const email = user.email;
   return res.status(statuscode).json({
     status: 'Success',
     token,
-    user,
+    userName,
+    email
   });
 };
 
 exports.signUp = catchAsync(async (req, res, next) => {
-    console.log("ddddd");
     const user = await UserModel.create({
     Name:req.body.Name,
     email:req.body.email,
     phoneNumber:req.body.phoneNumber,
     birthdate:req.body.birthdate,
     age:req.body.age,
+    role: req.body.role,
     username: req.body.username,
     password:req.body.password    
   });
@@ -67,7 +69,6 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
-
   if (!token) {
     return next(
       new AppError('You are not logged in! Please log in to get access.', 401)
@@ -111,84 +112,19 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   createNsendToken(user, 200, res);
 });
 
-// exports.restrictTo = (...roles) => {
-//   return (req, res, next) => {
-//     if (!roles.includes(req.user.role)) {
-//       return next(
-//         new AppError('You do not have permission to perform this action', 403)
-//       );
-//     }
 
-//     next();
-//   };
-// };
-//code 
-// const User=require('../models/userModel')
-// const bcrypt=require('bcryptjs')
-// const jwt =require('jsonwebtoken')
-
-
-// exports.register=(req,res,next)=>{
-//     bcrypt.hash(req.body.password,10,function(err,hashPass){
-//         if(err){
-//             res.json({error:err})
-//         }
-//         let user=new User({
-//             Name:req.body.Name,
-//             email:req.body.email,
-//             phoneNumber:req.body.phoneNumber,
-//             birthdate:req.body.birthdate,
-//             age:req.body.age,
-//             password:hashPass,
-
-//         })
-//         user.save()
-//         .then(user=>{
-//             res.json({
-//                 message:'User add successfully'
-//             })
-//         }).catch(error=>{
-//             res.json({
-//                 message:error
-//             })
-//         })
-//     })
-    
-// }
-
-// exports.Login=(req,res,next)=>{
-//     var username=req.body.username
-//     var password=req.body.password
-    
-//     User.findOne({$or:[{email:username},{phone:username}]})
-//     .then(user=>{
-//         console.log(user)
-//         if(user){
-//                 bcrypt.compare(password,user.password,function(err,result){
-
-//                     if(err){
-//                         res.json({
-//                             error:err
-//                         })
-//                     }if(result){
-//                         let token=jwt.sign({name:user.name}, 'verySecretValue' ,{expiresIn:'1h'})
-//                         res.json({
-//                             message:'Lgin suucessfully',
-//                             token
-//                         })
-//                     }else{
-//                         res.json({
-//                             message:'Password dose not match'
-//                         })
-//                     }
-//                 })
-//         }else{
-//             res.json({
-//                 message:'No user found'
-//             })
-//         }
-//     })
-
-
-    
-// }
+exports.grantAccess = function(action, resource) {
+ return async (req, res, next) => {
+  try {
+   const permission = roles.can(req.user.role)[action](resource);
+   if (!permission.granted) {
+    return res.status(401).json({
+     error: "You don't have enough permission to perform this action"
+    });
+   }
+   next()
+  } catch (error) {
+   next(error)
+  }
+ }
+}

@@ -1,6 +1,6 @@
 const CategoryModels = require('../models/categoryModel');
-const AppError = require('../Utill/appError');
-const catchAsync = require('../Utill/catchAsync');
+const AppError = require('../Util/appError');
+const catchAsync = require('../Util/catchAsync');
 
 exports.createCategory = catchAsync(async (req, res, next) => {
   const NewCategory = await CategoryModels.create({
@@ -16,12 +16,15 @@ exports.createCategory = catchAsync(async (req, res, next) => {
 exports.getcategory = catchAsync(async (req, res, next) => {
   let categoryID=req.params.categoryID;
   const category = await CategoryModels.findById(categoryID);
+  const title=category.title?category.title:''
+  const countProduct=category.countProduct?category.countProduct:0
   if(!category){
     return next(new AppError('Request is not providing', 400));
   }else{
       res.status(201).json({
           status: 'successful',
-          category,
+          title,
+          countProduct
         });
     }
 });
