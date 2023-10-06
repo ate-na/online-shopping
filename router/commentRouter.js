@@ -1,11 +1,11 @@
-const express=require('express');
-const router=express.Router()
+const express = require("express");
+const router = express.Router();
 
-const commentController = require('../controller/commentController')
+const commentController = require("../controller/commentController");
 // const {authenticate}=require('../middleware/authenticate')
-const {authenticate}=require('../controller/AuthController')
+const { authenticate } = require("../controller/AuthController");
 
-router.get('/:ProductID',authenticate,commentController.Showcomments)
-router.post('/',authenticate,commentController.createcomment)
+router.get("/:ProductID", commentController.Showcomments);
+router.post("/", commentController.createcomment);
 
 module.exports = router;

@@ -1,17 +1,18 @@
-const express=require('express');
-const router=express.Router()
+const express = require("express");
+const router = express.Router();
 
-const Productcontroller=require('../controller/Productcontroller')
-const upload=require('../middleware/upload')
-const {authenticate,grantAccess}=require('../controller/AuthController')
+const Productcontroller = require("../controller/Productcontroller");
+const upload = require("../middleware/upload");
+const { grantAccess } = require("../controller/AuthController");
 
+router.get("/", Productcontroller.getAllproducts);
+router.get("/:ProductID", Productcontroller.getproduct);
+router.post(
+  "/create",
+  upload.single("picture"),
+  Productcontroller.createProduct
+);
+router.put("/update/:productId", Productcontroller.updateProduct);
+router.delete("/delete", Productcontroller.deleteProduct);
 
-
-router.get('/',authenticate,Productcontroller.getAllproducts)
-router.get('/:ProductID',authenticate,Productcontroller.getproduct)
-router.post('/create',authenticate,upload.single('picture'),grantAccess('createAny','product'),Productcontroller.createProduct)
-router.put('/update/:productId',authenticate,grantAccess('updateAny','product'),Productcontroller.updateProduct)
-router.delete('/delete',authenticate,grantAccess('deleteAny','product'),Productcontroller.deleteProduct)
-
-
-module.exports=router
+module.exports = router;
