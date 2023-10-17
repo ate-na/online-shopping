@@ -6,5 +6,6 @@ const { authenticate, grantAccess } = require("../controller/AuthController");
 
 router.post("/store", CategoryController.createCategory);
 router.get("/:categoryID", CategoryController.getcategory);
+router.get("/", CategoryController.getAllCategories);
 
 module.exports = router;

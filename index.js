@@ -38,7 +38,12 @@ app.use(bodyparser.json());
 // app.use(passport.initialize())
 
 app.use("/uploads", express.static("uploads"));
-app.use(cors());
+app.use(
+  cors({
+    allowedHeaders: "*",
+    origin: "*",
+  })
+);
 
 const PORT = process.env.PORT || 3000;
 

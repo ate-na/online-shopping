@@ -31,6 +31,20 @@ const createNsendToken = (user, statuscode, res) => {
 exports.signUp = catchAsync(async (req, res, next) => {
   console.log("signUp");
   console.log(req.body);
+
+  const isAlreadyExist = await UserModel.findOne({ email: req.body.email });
+
+  console.log(isAlreadyExist);
+
+  if (isAlreadyExist) {
+    return res
+      .status(402)
+      .json({ message: "This User Already Exist", status: 402 });
+  }
+
+  if (req.body.password.length < 8) {
+    return res.status(402).json({ message: "password is week", status: 402 });
+  }
   try {
     const user = await UserModel.create({
       Name: req.body.Name,
@@ -40,7 +54,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
       age: req.body.age,
       role: req.body.role,
       username: req.body.username,
-      password: req.body.phoneNumber,
+      password: req.body.password,
     });
 
     createNsendToken(user, 200, res);
@@ -51,10 +65,14 @@ exports.signUp = catchAsync(async (req, res, next) => {
 
 exports.logIn = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
-
+  console.log("body is", req.body);
   // Check the inputs
   if (!username || !password) {
-    return next(new AppError("Please provide your username and password", 400));
+    // return next(new AppError("Please provide your username and password", 400));
+    return res.status(400).json({
+      message: "Please provide your username and password",
+      status: 400,
+    });
   }
 
   // Check if user Exists
@@ -63,7 +81,11 @@ exports.logIn = catchAsync(async (req, res, next) => {
   }).select("+password");
 
   if (!user || !(await user.checkPassword(user.password, password))) {
-    return next(new AppError("Incorrect Login Credentials", 401));
+    // return next(new AppError("Incorrect Login Credentials", 401));
+    return res.status(401).json({
+      message: "Incorrect Login Credentials",
+      status: 401,
+    });
   }
   createNsendToken(user, 200, res);
 });
@@ -77,9 +99,13 @@ exports.authenticate = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(" ")[1];
   }
   if (!token) {
-    return next(
-      new AppError("You are not logged in! Please log in to get access.", 401)
-    );
+    // return next(
+    //   // new AppError("You are not logged in! Please log in to get access.", 401)
+    // );
+    return res.status(401).json({
+      message: "You are not logged in! Please log in to get access.",
+      status: 401,
+    });
   }
 
   // Verification token
@@ -88,12 +114,10 @@ exports.authenticate = catchAsync(async (req, res, next) => {
   const user = await UserModel.findById(decoded.id);
 
   if (!user) {
-    return next(
-      new AppError(
-        "The user belonging to this token does no longer exist.",
-        401
-      )
-    );
+    res.status(401).json({
+      message: "The user belonging to this token does no longer exist.",
+      status: 401,
+    });
   }
 
   req.user = user;
@@ -101,15 +125,11 @@ exports.authenticate = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
-  const { oldPassword, newPassword } = req.body;
+  const { newPassword } = req.body;
 
   // Get user
+  console.log("user is", req.user);
   const user = await UserModel.findById(req.user._id).select("+password");
-
-  // Checking POSTed password
-  if (!(await user.checkPassword(user.password, oldPassword))) {
-    return next(new AppError("Your current password is wrong", 401));
-  }
 
   // Everything is OK
   user.password = newPassword;
@@ -122,7 +142,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 exports.grantAccess = function (action, resource) {
   return async (req, res, next) => {
     try {
-      const permission = roles.can(req.user.role)[action](resource);
+      const permission = roles.can(req.user?.role)[action](resource);
       if (!permission.granted) {
         return res.status(401).json({
           error: "You don't have enough permission to perform this action",

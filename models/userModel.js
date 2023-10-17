@@ -41,6 +41,7 @@ const userSchema = new Schema(
       unique: [true, "This Email is not available"],
       index: true,
     },
+
     role: {
       type: String,
       default: "customer",
@@ -109,9 +110,9 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
-  if (!this.phoneNumber.startsWith("+98")) {
-    this.phoneNumber = `+98${this.phoneNumber.slice(1)}`;
-  }
+  // if (!this.phoneNumber.startsWith("+98")) {
+  //   this.phoneNumber = `+98${this.phoneNumber.slice(1)}`;
+  // }
 
   next();
 });
