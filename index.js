@@ -53,7 +53,7 @@ app.listen(PORT, () => {
 
 app.use("/product", Productrouter);
 app.use("/api", AuthRouter);
-app.use("/category", categoryRouter);
+app.use("/category", categoryRouter); 
 app.use("/comment", commentRouter);
 app.use("/user", userRouter);
 app.use("/order", orderRouter);

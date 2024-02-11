@@ -8,16 +8,17 @@ exports.createCategory = catchAsync(async (req, res, next) => {
 
   if (category) {
     return res.status(402).json({
-      error: "this category already exist",
+      message: "this category already exist",
     });
   }
-
+  console.log(req.file);
   const NewCategory = await CategoryModels.create({
     title: req.body.title,
     countProduct: req.body?.countProduct || 0,
+    picture: req.file.filename,
   });
   res.status(201).json({
-    status: "successful",
+    message: "successful",
     data: NewCategory,
   });
 });
