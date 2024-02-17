@@ -7,11 +7,7 @@ const { grantAccess } = require("../controller/AuthController");
 
 router.get("/", Productcontroller.getAllproducts);
 router.get("/:ProductID", Productcontroller.getproduct);
-router.post(
-  "/create",
-  upload.array("picture"),
-  Productcontroller.createProduct
-);
+router.post("/create", upload.array("files"), Productcontroller.createProduct);
 router.put("/update/:productId", Productcontroller.updateProduct);
 router.delete("/delete", Productcontroller.deleteProduct);
 

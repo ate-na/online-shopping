@@ -6,13 +6,16 @@ const SELECTS = require("../Util/handlefind");
 const APIFeatures = require("../Util/apiFeatures");
 exports.getAllproducts = async (req, res, next) => {
   const select = SELECTS + " -OrderID";
-  const features = new APIFeatures(Product.find().select(select), req.query);
+  const features = new APIFeatures(
+    Product.find().populate("categoryID"),
+    req.query
+  );
 
   const ProductALL = await features.query;
 
   res.status(200).json({
-    status: "Success",
-    products: ProductALL,
+    message: "Success",
+    data: ProductALL,
   });
 };
 
@@ -28,7 +31,7 @@ exports.getproduct = catchAsync(async (req, res, next) => {
     return next(new AppError("Product not found", 400));
   } else {
     res.status(200).json({
-      status: "successful",
+      message: "successful",
       product,
     });
   }
@@ -41,9 +44,9 @@ exports.createProduct = catchAsync(async (req, res, next) => {
       message: "Please provide a category",
     });
   }
-  const findcategory = await categoryModel
-    .findById(categoryID)
-    .select("+countProduct");
+  console.log("files", req.files);
+  const findcategory = await categoryModel.findById(categoryID);
+
   //   console.log(findcategory)
   const category = await categoryModel.findByIdAndUpdate(
     categoryID,
@@ -52,30 +55,27 @@ exports.createProduct = catchAsync(async (req, res, next) => {
       runValidators: true,
     }
   );
-  const categorytitle = category.title;
-  console.log(req.body);
-  console.log(req.file);
+
   let newProduct = new Product({
-    name: req.body.name,
+    title: req.body.title,
     price: req.body.price,
     Exitence: req.body.Exitence,
     description: req.body.description,
     OrderID: OrderID,
-    picture: req.file.picture,
+    picture: req.files,
+    categoryID,
   });
-  if (req.file) {
-    newProduct.picture = req.file.picture;
+  console.log(req.file);
+  if (req.files) {
+    newProduct.picture = req.files;
   }
-  newProduct.save();
-  const name = newProduct.name;
-  const price = newProduct.price;
-  const description = newProduct.description;
+  await newProduct.save();
+  console.log(findcategory);
+  newProduct.category = findcategory;
+
   res.status(201).json({
-    status: "successful",
-    name,
-    price,
-    description,
-    categorytitle,
+    message: "successfuly",
+    data: newProduct,
   });
 });
 

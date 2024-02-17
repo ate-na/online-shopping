@@ -3,13 +3,13 @@ const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
     },
     price: {
       type: Number,
-      required: true,
+      required: false,
     },
     Exitence: {
       type: Boolean,
@@ -37,7 +37,6 @@ const ProductSchema = new Schema(
   }
 );
 
-ProductSchema.index({ ProductID: 1 }, { unique: true });
 const product = mongoose.model("Product", ProductSchema);
 
 module.exports = product;
