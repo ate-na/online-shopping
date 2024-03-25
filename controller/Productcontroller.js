@@ -4,6 +4,7 @@ const AppError = require("../Util/appError");
 const catchAsync = require("../Util/catchAsync");
 const SELECTS = require("../Util/handlefind");
 const APIFeatures = require("../Util/apiFeatures");
+const product = require("../models/productModel");
 exports.getAllproducts = async (req, res, next) => {
   const select = SELECTS + " -OrderID";
   const features = new APIFeatures(
@@ -32,7 +33,7 @@ exports.getproduct = catchAsync(async (req, res, next) => {
   } else {
     res.status(200).json({
       message: "successful",
-      product,
+      data: product,
     });
   }
 });
@@ -96,7 +97,12 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
   try {
     const update = req.body;
+    console.log("update", update);
     const productId = req.params.productId;
+    console.log("req files", req.files);
+    if (req.files && req.files.length > 0) {
+      update["picture"] = req.files;
+    }
     await Product.findByIdAndUpdate(productId, update);
     const productupdate = await Product.findById(productId);
     res.status(200).json({
